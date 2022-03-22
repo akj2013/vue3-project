@@ -9,10 +9,10 @@
     <div class="red">{{ error }}</div>
     <!-- todo가 없을 때 경고 메세지 -->
     <div v-if="!todos.length" class="mt-4 red">추가된 TODO가 없습니다.</div>
-    <!-- 검색 결과가 없을 때 경고 메세지 -->   
+    <!-- 검색 결과가 없을 때 경고 메세지 -->
     <div v-if="!filteredTodos.length && todos.length" class="mt-4 red">표시할 TODO가 없습니다.</div>
     <!-- todo 반복문 -->
-    <TodoList :todos="filteredTodos" @toggle-todo="toggleTodo" @delete-todo="deleteTodo" />
+    <TodoList :todos="filteredTodos" :numberOfPages="numberOfPages" :currentPage="currentPage" @toggle-todo="toggleTodo" @delete-todo="deleteTodo" @get-todos="getTodos" />
   </div>
   <div class="container align-items-center">
     <hr>
@@ -47,12 +47,21 @@ export default {
     const toggle = ref(false);
     const todos = ref([]);
     const error = ref('');
+    const totalTodos = ref(0);
+    const pageLimit = 5;
+    const currentPage = ref(1);
+    const numberOfPages = computed(() => {
+      return Math.ceil(totalTodos.value / pageLimit); // 올림 2.2 = 3페이지
+    })
 
     // db.json으로부터 todos를 가져온다.
     // 리턴하는 함수가 아니다.
-    const getTodos = async () => {
+    const getTodos = async (page = currentPage.value) => {
+      currentPage.value = page;
       try {
-        const res = await axios.get('http://localhost:3000/todos');
+        // 백틱: ``으로 할 시, 문자열 내부에 자바스크립트 객체를 사용할 수 있다.
+        const res = await axios.get(`http://localhost:3000/todos?_page=${page}&_limit=${pageLimit}`);
+        totalTodos.value = res.headers['x-total-count']; // todo 갯수
         todos.value = (res.data);
       } catch(err) {
         console.log(err);
@@ -149,6 +158,9 @@ export default {
       toggleShowIf,
       showComputed,
       toggleComputed,
+      numberOfPages,
+      currentPage,
+      getTodos,
     };
   }
 }
