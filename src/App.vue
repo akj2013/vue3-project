@@ -9,7 +9,7 @@
     <div class="red">{{ error }}</div>
     <!-- todo가 없을 때 경고 메세지 -->
     <div v-if="!todos.length" class="mt-4 red">추가된 TODO가 없습니다.</div>
-    <!-- 검색 결과가 없을 때 경고 메세지 -->
+    <!-- 검색 결과가 없을 때 경고 메세지 -->   
     <div v-if="!filteredTodos.length && todos.length" class="mt-4 red">표시할 TODO가 없습니다.</div>
     <!-- todo 반복문 -->
     <TodoList :todos="filteredTodos" @toggle-todo="toggleTodo" @delete-todo="deleteTodo" />
