@@ -2,7 +2,7 @@
   <!-- 데이터 반복문 v-for -->
   <div class="mt-4">
     <div v-for="(todo, index) in todos" :key="todo.id" class="card mt-2">
-      <div class="card-body p-2 d-flex align-items-center">
+      <div @click="moveToPage(todo.id)" class="card-body p-2 d-flex align-items-center">
         <div class="form-check flex-grow-1">
           <!-- 체크박스에 v-model로 데이터 연동 (양방향 바인딩) -->
           <input :checked="todo.completed" @change="toggleTodo(index)" type="checkbox" class="form-check-input">
@@ -34,6 +34,8 @@
 </template>
 
 <script>
+import { useRouter } from 'vue-router';
+
 export default {
 	props: {
 		todos: {
@@ -51,6 +53,7 @@ export default {
 	},
   emits: ['toggle-todo', 'delete-todo', 'get-todos'],
   setup(props, { emit }) {
+    const router = useRouter();
     const todoStyle = {
       textDecoration: 'line-through', // -는 못 쓰고, 대문자로 쓴다.
       color: 'gray',
@@ -64,12 +67,24 @@ export default {
     const getTodos = (page) => {
       emit('get-todos', page);
     };
+    const moveToPage = (id) => {
+      console.log(id);
+      // router.push('/todos/' + id); // 가고 싶은 페이지로 이동한다.
+      // 두 가지 방법이 있다. 아래에는 path가 고정되고 name이 바뀔 경우, 소스 수정이 쉽다.
+      router.push({
+        name: 'TodoDetail',
+        params: {
+          id: id
+        }
+      });
+    }
 
     return {
       todoStyle,
       toggleTodo,
       deleteTodo,
       getTodos,
+      moveToPage,
     }
   }
 }

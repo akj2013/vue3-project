@@ -12,7 +12,7 @@
     },
     {
       "subject": "Pagination 추가",
-      "completed": false,
+      "completed": true,
       "id": 10
     },
     {
@@ -49,6 +49,16 @@
       "subject": "6",
       "completed": false,
       "id": 17
+    },
+    {
+      "subject": "Vue Router",
+      "completed": false,
+      "id": 18
+    },
+    {
+      "subject": "eslint ignore 설정",
+      "completed": false,
+      "id": 19
     }
   ]
 }
