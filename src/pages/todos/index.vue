@@ -1,6 +1,6 @@
 <template>
-<router-view/>
-  <div class="container">
+
+  <div>
     <h2 class="blue">To-Do List</h2>
     <input class="form-control" type="text" v-model="searchText" placeholder="Search" @keyup.enter="searchTodo">
     <hr>
@@ -152,14 +152,14 @@ export default {
     };
 
     // complted 변경 기능
-    const toggleTodo = async (index) => {
+    const toggleTodo = async (index, chekced) => {
       error.value = '';
       const id = todos.value[index].id;
       try {
         await axios.patch('http://localhost:3000/todos/' + id, {
-          completed: !todos.value[index].completed
+          completed: chekced
         });
-        todos.value[index].completed = !todos.value[index].completed;
+        todos.value[index].completed = chekced;
       } catch(err) {
         error.value = 'PATCH 송신에 에러가 발생하였습니다.';
       }

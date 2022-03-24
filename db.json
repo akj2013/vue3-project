@@ -41,22 +41,12 @@
       "id": 15
     },
     {
-      "subject": "5",
-      "completed": false,
-      "id": 16
-    },
-    {
-      "subject": "6",
-      "completed": false,
-      "id": 17
-    },
-    {
       "subject": "Vue Router",
       "completed": false,
       "id": 18
     },
     {
-      "subject": "eslint ignore 설정",
+      "subject": "객체 복사/비교 lodash {...a}",
       "completed": false,
       "id": 19
     }

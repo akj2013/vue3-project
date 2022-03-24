@@ -2,20 +2,20 @@
   <!-- 데이터 반복문 v-for -->
   <div class="mt-4">
     <div v-for="(todo, index) in todos" :key="todo.id" class="card mt-2">
-      <div @click="moveToPage(todo.id)" class="card-body p-2 d-flex align-items-center">
+      <div @click="moveToPage(todo.id)" class="cusrsorPointer card-body p-2 d-flex align-items-center">
         <div class="form-check flex-grow-1">
           <!-- 체크박스에 v-model로 데이터 연동 (양방향 바인딩) -->
-          <input :checked="todo.completed" @change="toggleTodo(index)" type="checkbox" class="form-check-input">
+          <input @click.stop :checked="todo.completed" @change="toggleTodo(index, $event)" type="checkbox" class="form-check-input">
           <!-- 객체로 style 바인딩 / 삼항연산자 사용 -->
-          <label :style="todo.completed == true ? todoStyle : {}" class="form-check-label">{{ todo.subject }}</label>
+          <label :style="todo.completed == true ? todoStyle : {}" class="form-check-label cusrsorPointer">{{ todo.subject }}</label>
           &nbsp;
           <!-- class 바인딩 / 조건식 추가 
           <label :class="{todo : todo.completed}" class="form-check-label">{{ todo.subject }}</label>
           -->
         </div>
-        <!-- 삭제 버튼 -->
+        <!-- 삭제 버튼 .stop : 이벤트 버블링을 방지해준다. -->
         <div>
-          <button @click="deleteTodo(index)" class="btn btn-danger btn-sm">Delete</button>
+          <button @click.stop="deleteTodo(index)" class="btn btn-danger btn-sm">Delete</button>
         </div>
       </div>
     </div>
@@ -58,8 +58,8 @@ export default {
       textDecoration: 'line-through', // -는 못 쓰고, 대문자로 쓴다.
       color: 'gray',
     };
-    const toggleTodo = (index) => {
-      emit('toggle-todo', index);
+    const toggleTodo = (index, event) => {
+      emit('toggle-todo', index, event.target.checked); // checked : true / false
     };
     const deleteTodo = (index) => {
       emit('delete-todo', index);

@@ -22,7 +22,9 @@
     </ul>
   </nav>
   <!-- 라우터 뷰 -->
-  <router-view/>
+  <div class="container">
+    <router-view/>
+  </div>
 </template>
 
 <script>
