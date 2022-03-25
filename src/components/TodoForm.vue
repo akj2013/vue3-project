@@ -12,7 +12,7 @@
         <div class="form-group">
           <label>Todo Subject</label>
           <input v-model="todo.subject" type="text" class="form-control">
-          <div v-if="subjectError" class="red">
+          <div v-if="subjectError" class="text-red">
             {{subjectError}}
           </div>
         </div>
@@ -54,7 +54,9 @@
       Back
     </button>
   </form>
-  <Toast v-if="showToast" :message="toastMessage" :type="toastAlertType" />
+  <transition name="fade"> <!-- transition : 애니메이션 추가 -->
+    <Toast v-if="showToast" :message="toastMessage" :type="toastAlertType" />
+  </transition>
   <div id="test"></div>
 </template>
 
@@ -200,6 +202,28 @@ export default {
 }
 </script>
 
-<style>
+<style scoped> /* scoped : 다른 컴포넌트에서 적용되지 않는다. 모든 태그에 유니크한 ID가 추가된다. */
+.text-red {
+  color: red;
+}
+</style>
 
+<style> /* global 적용 스타일 시트 */
+.fade-enter-active,
+.fade-leave-active {
+  transition: all 0.5s ease;
+}
+
+/* 시작점 */
+.fade-enter-from,
+.fade-leave-to {
+  opacity: 0;
+  transform: translateY(-30px); 
+}
+/* 종료점 */
+.fade-enter-to,
+.fade-leave-from {
+  opacity: 1;
+  transform: translateY(0px);
+}
 </style>

@@ -5,7 +5,7 @@
       <div @click="moveToPage(todo.id)" class="cusrsorPointer card-body p-2 d-flex align-items-center">
         <div class="form-check flex-grow-1">
           <!-- 체크박스에 v-model로 데이터 연동 (양방향 바인딩) -->
-          <input @click.stop :checked="todo.completed" @change="toggleTodo(index, $event)" type="checkbox" class="form-check-input">
+          <input @click.stop :checked="todo.completed" @change="toggleTodo(index, $event)" type="checkbox" class="form-check-input ml-1 mr-1">
           <!-- 객체로 style 바인딩 / 삼항연산자 사용 -->
           <label :style="todo.completed == true ? todoStyle : {}" class="form-check-label cusrsorPointer">{{ todo.subject }}</label>
           &nbsp;
@@ -15,7 +15,7 @@
         </div>
         <!-- 삭제 버튼 .stop : 이벤트 버블링을 방지해준다. -->
         <div>
-          <button @click.stop="deleteTodo(index)" class="btn btn-danger btn-sm">Delete</button>
+          <button @click.stop="openModal(todo.id)" class="btn btn-danger btn-sm">Delete</button>
         </div>
       </div>
     </div>
@@ -31,12 +31,20 @@
       </ul>
     </nav>
   </div>
+  <!-- 텔레포트 기능 -->
+  <teleport to="#modal">
+    <Modal v-if="showModal" @close="closeModal" @delete="deleteTodo" :todoDeleteId="todoDeleteId"/>
+  </teleport>
 </template>
 
 <script>
 import { useRouter } from 'vue-router';
-
+import Modal from '@/components/DeleteModal.vue';
+import { ref } from 'vue';
 export default {
+  components: {
+    Modal,
+  },
 	props: {
 		todos: {
 			type: Array,
@@ -61,8 +69,21 @@ export default {
     const toggleTodo = (index, event) => {
       emit('toggle-todo', index, event.target.checked); // checked : true / false
     };
-    const deleteTodo = (index) => {
-      emit('delete-todo', index);
+    // modal 열기
+    const todoDeleteId = ref(null);
+    const openModal = (id) => {
+      todoDeleteId.value = id;
+      showModal.value = true;
+    };
+    // modal 닫기
+    const closeModal = () => {
+      todoDeleteId.value = null;
+      showModal.value = false;
+    }
+    const deleteTodo = () => {
+      emit('delete-todo', todoDeleteId.value);
+      todoDeleteId.value = null;
+      showModal.value = false;
     };
     const getTodos = (page) => {
       emit('get-todos', page);
@@ -77,7 +98,8 @@ export default {
           id: id
         }
       });
-    }
+    };
+    const showModal = ref(false);
 
     return {
       todoStyle,
@@ -85,6 +107,10 @@ export default {
       deleteTodo,
       getTodos,
       moveToPage,
+      showModal,
+      openModal,
+      closeModal,
+      todoDeleteId,
     }
   }
 }

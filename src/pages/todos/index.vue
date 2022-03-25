@@ -24,7 +24,9 @@
     <label class="form-check-label" style="padding-left: 10px;">Computed 사용</label>
     <TodoComputed v-if="showComputed" />
   </div>
-  <Toast v-if="showToast" :message="toastMessage" :type="toastAlertType" />
+  <transition name="fade"> <!-- transition : 애니메이션 추가 -->
+    <Toast v-if="showToast" :message="toastMessage" :type="toastAlertType" />
+  </transition>
 </template>
 
 <script>
@@ -142,13 +144,13 @@ export default {
     };
 
     // 삭제 기능
-    const deleteTodo = async (index) => {
+    const deleteTodo = async (id) => {
       error.value = '';
-      const id = todos.value[index].id;
       try {
         await axios.delete('http://localhost:3000/todos/' + id);
-        todos.value.splice(index, 1);
-        alert('id : ' + id + '가 삭제되었습니다.');
+        // toast 호출
+        triggerToast(id + '번째 TODO가 삭제되었습니다.', 'danger');
+
         // TODO 재검색
         // 전체 갯수 % 삭제한 후 갯수 == 0 && 현재가 마지막 페이지, 페이지 = 페이지 - 1을 해준다.
         const res = await axios.get('http://localhost:3000/todos/');
@@ -254,5 +256,22 @@ export default {
 .todo {
   color: gray;
   text-decoration: line-through;
+}
+.fade-enter-active,
+.fade-leave-active {
+  transition: all 0.5s ease;
+}
+
+/* 시작점 */
+.fade-enter-from,
+.fade-leave-to {
+  opacity: 0;
+  transform: translateY(-30px); 
+}
+/* 종료점 */
+.fade-enter-to,
+.fade-leave-from {
+  opacity: 1;
+  transform: translateY(0px);
 }
 </style>
