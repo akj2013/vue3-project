@@ -1,6 +1,6 @@
 <template>
-  <h1>TodoDetail 페이지</h1>
-  <TodoForm :editing="true"/>
+  <h1>Create Todo</h1>
+  <TodoForm/>
 </template>
 
 <script>

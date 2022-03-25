@@ -1,13 +1,12 @@
 <template>
 
   <div>
-    <h2 class="blue">To-Do List</h2>
+    <div class="d-flex justify-content-between mb-3">
+      <h2 class="blue">To-Do List</h2>
+      <button @click="moveToCreatePage" class="btn btn-primary">Create Todo</button>
+    </div>
     <input class="form-control" type="text" v-model="searchText" placeholder="Search" @keyup.enter="searchTodo">
     <hr>
-    <!-- 입력 컴포넌트 -->
-    <TodoSimpleForm @add-todo="addTodo"></TodoSimpleForm>
-    <!-- todo추가 시 에러 메세지 -->
-    <div class="red">{{ error }}</div>
     <!-- todo가 없을 때 경고 메세지 -->
     <div v-if="!todos.length" class="mt-4 red">추가된 TODO가 없습니다.</div>
     <!-- 검색 결과가 없을 때 경고 메세지 -->
@@ -25,26 +24,29 @@
     <label class="form-check-label" style="padding-left: 10px;">Computed 사용</label>
     <TodoComputed v-if="showComputed" />
   </div>
+  <Toast v-if="showToast" :message="toastMessage" :type="toastAlertType" />
 </template>
 
 <script>
 import { ref, computed, watch } from 'vue'; // 데이터 연동
 
-import TodoSimpleForm from '@/components/TodoSimpleForm.vue';
 import TodoList from '@/components/TodoList.vue';
 import TodoShowIf from '@/components/TodoShowIf.vue';
 import TodoComputed from '@/components/TodoComputed.vue';
-
+import Toast from '@/components/Toast.vue';
+import { useToast } from '@/composables/toast'; // .js는 생략가능
 import axios from 'axios';
+import {useRouter} from 'vue-router';
 
 export default {
   components: {
-    TodoSimpleForm,
     TodoList,
     TodoShowIf,
     TodoComputed,
+    Toast,
   },
   setup() { // 
+    const router = useRouter();
     const toggle = ref(false);
     const todos = ref([]);
     const error = ref('');
@@ -55,6 +57,14 @@ export default {
       return Math.ceil(totalTodos.value / pageLimit); // 올림 2.2 = 3페이지
     });
     const searchText = ref('');
+    // toast
+    const {
+      showToast,
+      toastMessage,
+      toastAlertType,
+      triggerToast
+    } = useToast();
+
 // === watch 예제 ===
     // const a = reactive({
     //   b: 1,
@@ -97,7 +107,7 @@ export default {
         todos.value = (res.data);
       } catch(err) {
         console.log(err);
-        error.value = 'GET 송신에 에러가 발생하였습니다.';
+        triggerToast('GET 송신에 에러가 발생하였습니다.', 'danger');
       }
     };
 
@@ -122,7 +132,7 @@ export default {
         getTodos();
       } catch(err2) {
         console.log(err2);
-        error.value = 'POST 송신에 에러가 발생하였습니다.';
+        triggerToast('POST 송신에 에러가 발생하였습니다.', 'danger');
       }
     };
 
@@ -147,7 +157,7 @@ export default {
         }
         getTodos(currentPage.value);
       } catch(err) {
-        error.value = 'DELETE 송신에 에러가 발생하였습니다.';
+        triggerToast('DELETE 송신에 에러가 발생하였습니다.', 'danger');
       }
     };
 
@@ -161,7 +171,7 @@ export default {
         });
         todos.value[index].completed = chekced;
       } catch(err) {
-        error.value = 'PATCH 송신에 에러가 발생하였습니다.';
+        triggerToast('PATCH 송신에 에러가 발생하였습니다.', 'danger');
       }
     };
 
@@ -201,6 +211,12 @@ export default {
       getTodos(1);
     }
 
+    const moveToCreatePage = () => {
+      router.push({
+        name: 'TodoCreate'
+      });
+    };
+
     return {
       toggle,
       todos,
@@ -219,6 +235,10 @@ export default {
       currentPage,
       getTodos,
       searchTodo,
+      showToast,
+      toastMessage,
+      toastAlertType,
+      moveToCreatePage,
     };
   }
 }

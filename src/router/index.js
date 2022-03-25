@@ -2,6 +2,7 @@ import { createRouter, createWebHistory } from 'vue-router';
 import Home from '../pages/index.vue';
 import Todos from '../pages/todos/index.vue';
 import TodoDetail from '../pages/todos/_id.vue';
+import TodoCreate from '../pages/todos/create/TodoCreate.vue';
 
 const router = createRouter({
   history: createWebHistory(), // ?
@@ -20,6 +21,11 @@ const router = createRouter({
       path: '/todos/:id', // 변수처럼 넣음
       name: 'TodoDetail',
       component: TodoDetail
+    },
+    {
+      path: '/todos/create',
+      name: 'TodoCreate',
+      component: TodoCreate
     }
   ]
 });
