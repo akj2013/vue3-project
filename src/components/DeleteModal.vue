@@ -1,9 +1,9 @@
 <template>
   <Modal>
       <!-- slot으로 들어간다. -->
-      <template v-slot:title>Delete Todo!!!</template>
-      <template v-slot:body>정말로 삭제하시겠습니까?{{todoDeleteId}}</template>
-      <template v-slot:footer>
+      <template #title>Delete Todo!!!</template>
+      <template #body>정말로 삭제하시겠습니까?{{todoDeleteId}}</template>
+      <template #footer>
           <button @click="onClose" type="button" class="btn btn-secondary">Close</button>
           <button @click="onDelete" type="button" class="btn btn-danger">Delete</button>
       </template>

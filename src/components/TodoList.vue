@@ -1,24 +1,33 @@
 <template>
   <!-- 데이터 반복문 v-for -->
   <div class="mt-4">
-    <div v-for="(todo, index) in todos" :key="todo.id" class="card mt-2">
-      <div @click="moveToPage(todo.id)" class="cusrsorPointer card-body p-2 d-flex align-items-center">
-        <div class="form-check flex-grow-1">
-          <!-- 체크박스에 v-model로 데이터 연동 (양방향 바인딩) -->
-          <input @click.stop :checked="todo.completed" @change="toggleTodo(index, $event)" type="checkbox" class="form-check-input ml-1 mr-1">
-          <!-- 객체로 style 바인딩 / 삼항연산자 사용 -->
-          <label :style="todo.completed == true ? todoStyle : {}" class="form-check-label cusrsorPointer">{{ todo.subject }}</label>
-          &nbsp;
-          <!-- class 바인딩 / 조건식 추가 
-          <label :class="{todo : todo.completed}" class="form-check-label">{{ todo.subject }}</label>
-          -->
+    <!-- 
+    slot을 사용해서 List.vue를 import했으므로 코멘트아웃 div.
+    scoped slot을 사용한다.
+    <div v-for="(todo, index) in todos" :key="todo.id" class="card mt-2"> -->
+    <List
+      :items="todos"
+    >
+      <template #default="{ item, index }">
+        <div @click="moveToPage(item.id)" class="cusrsorPointer card-body p-2 d-flex align-items-center">
+          <div class="form-check flex-grow-1">
+            <!-- 체크박스에 v-model로 데이터 연동 (양방향 바인딩) -->
+            <input @click.stop :checked="item.completed" @change="toggleTodo(index, $event)" type="checkbox" class="form-check-input ml-1 mr-1">
+            <!-- 객체로 style 바인딩 / 삼항연산자 사용 -->
+            <label :style="item.completed == true ? todoStyle : {}" class="form-check-label cusrsorPointer">{{ item.subject }}</label>
+            &nbsp;
+            <!-- class 바인딩 / 조건식 추가 
+            <label :class="{todo : todo.completed}" class="form-check-label">{{ todo.subject }}</label>
+            -->
+          </div>
+          <!-- 삭제 버튼 .stop : 이벤트 버블링을 방지해준다. -->
+          <div>
+            <button @click.stop="openModal(item.id)" class="btn btn-danger btn-sm">Delete</button>
+          </div>
         </div>
-        <!-- 삭제 버튼 .stop : 이벤트 버블링을 방지해준다. -->
-        <div>
-          <button @click.stop="openModal(todo.id)" class="btn btn-danger btn-sm">Delete</button>
-        </div>
-      </div>
-    </div>
+      </template>
+    </List>
+    <!-- </div> -->
     <!-- pagination -->
     <hr>
     <nav aria-label="Page navigation example">
@@ -41,9 +50,12 @@
 import { useRouter } from 'vue-router';
 import Modal from '@/components/DeleteModal.vue';
 import { ref } from 'vue';
+import List from '@/components/List.vue';
+
 export default {
   components: {
     Modal,
+    List,
   },
 	props: {
 		todos: {

@@ -7,40 +7,14 @@
     @submit.prevent="onSave"
   >
     <div class="row">
-      <!-- Subject -->
-      <div class="col-6">
-        <div class="form-group">
-          <label>Todo Subject</label>
-          <input v-model="todo.subject" type="text" class="form-control">
-          <div v-if="subjectError" class="text-red">
-            {{subjectError}}
-          </div>
-        </div>
-      </div>
-      <!-- Completed -->
-      <div v-if="editing" class="col-6">
-        <div class="form-group">
-          <label>Todo completed</label>
-          <div>
-            <!-- class 바인딩 -->
-            <!-- type이 button이면 form에 대한 submit을 하지 않는다. @click.stop으로도 안 먹힌다. -->
-            <button class="btn" :class="todo.completed ? 'btn-success' : 'btn-danger'"
-              type="button" 
-              @click="toggleTodoStatus"
-            >
-              {{ todo.completed ? 'Completed' : 'Incompleted'}}
-            </button>
-          </div>
-        </div>
-      </div>
-      <!-- Body -->
-      <div class="col-12">
-        <div class="form-group">
-          <label>Todo Body</label>
-          <textarea v-model="todo.body" class="form-control" cols="30" rows="10"></textarea>
-        </div>
-      </div>
+      <Input labelSubject="Subject" labelBody="Body" labelCompleted="Completed"
+        v-model:subject="todo.subject" v-model:completed="todo.completed" v-model:body="todo.body"
+        :editing="editing"
+        :error="subjectError"
+        @toggle-TodoStatus="toggleTodoStatus"
+      />
     </div>
+
     <button
       class="btn btn-primary" type="submit"
       :disabled="!todoUpdated"
@@ -62,15 +36,17 @@
 
 <script>
 import { useRoute, useRouter } from 'vue-router';
-import axios from 'axios';
+import axios from '@/axios.js';
 import { ref, computed, onBeforeMount, onMounted, onBeforeUpdate, onUpdated, onBeforeUnmount } from 'vue';
 import _ from 'lodash';
 import Toast from '@/components/Toast.vue';
 import { useToast } from '@/composables/toast'; // .js는 생략가능
+import Input from '@/components/Input.vue';
 
 export default {
   components: {
-    Toast
+    Toast,
+    Input
   },
   props: {
     editing: {
@@ -111,9 +87,11 @@ export default {
     console.log('setup함수가 먼저 실행된다.');
     onBeforeUpdate(() => {
       console.log('onbeforeUpdate');
+      // console.log(todo.value.subject);
     });
     onUpdated(() => {
       console.log('onUpdated');
+      // console.log(todo.value.subject);
     });
     onBeforeUnmount(() => {
       console.log('onBeforeUnmount');
@@ -169,18 +147,25 @@ export default {
         }
         if (props.editing) {
           // DB에 갱신한다.
-          res = await axios.put(`http://localhost:3000/todos/${todoId}`, data);
+          res = await axios.put(`todos/${todoId}`, data);
           // 갱신 후에는 다시 origin도 변경.
           originTodo.value = {...res.data};
         } else {
           // DB에 저장한다.
-          res = await axios.post(`http://localhost:3000/todos/`, data);
+          res = await axios.post('todos', data);
           // 저장 후에는 초기화.
           todo.value.subject = '';
           todo.value.body = '';
         }
         const message = 'Succesfully ' + (props.editing ? 'Updated' : 'Created') + '!!!';
         triggerToast(message);
+
+        // List 페이지로 이동시킨다.
+        if (!props.editing) {
+          router.push({
+            name: 'Todos'
+          })
+        }
       } catch(err) {
         triggerToast('axios 도중 에러가 발생했습니다.', 'danger');
       }

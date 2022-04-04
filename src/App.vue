@@ -25,11 +25,41 @@
   <div class="container">
     <router-view/>
   </div>
+  <!-- 토스트 : 화면 우측 위 성공 메세지-->
+  <Toast
+    v-if="showToast"
+    :message="toastMessage"
+    :type="toastAlertType"
+  />
 </template>
 
 <script>
-export default {
+import Toast from '@/components/Toast.vue';
+import { useToast } from '@/composables/toast'; // .js는 생략가능
 
+export default {
+  components: {
+    Toast
+  },
+  setup() {
+    // toast
+    const {
+      showToast,
+      toastMessage,
+      toastAlertType,
+      triggerToast
+    } = useToast();
+
+    console.log(showToast.value);
+
+    return {
+      showToast,
+      toastMessage,
+      toastAlertType,
+      triggerToast
+    }
+  }
+  
 }
 </script>
 

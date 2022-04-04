@@ -37,7 +37,7 @@ import TodoShowIf from '@/components/TodoShowIf.vue';
 import TodoComputed from '@/components/TodoComputed.vue';
 import Toast from '@/components/Toast.vue';
 import { useToast } from '@/composables/toast'; // .js는 생략가능
-import axios from 'axios';
+import axios from '@/axios.js';
 import {useRouter} from 'vue-router';
 
 export default {
@@ -104,7 +104,7 @@ export default {
       try {
         // 백틱: ``으로 할 시, 문자열 내부에 자바스크립트 객체를 사용할 수 있다.
         const res = await axios
-          .get(`http://localhost:3000/todos?_sort=id&_order=desc&subject_like=${searchText.value}&_page=${page}&_limit=${pageLimit}`);
+          .get(`todos?_sort=id&_order=desc&subject_like=${searchText.value}&_page=${page}&_limit=${pageLimit}`);
         totalTodos.value = res.headers['x-total-count']; // todo 갯수
         todos.value = (res.data);
       } catch(err) {
@@ -125,7 +125,7 @@ export default {
       // promise가 리턴된다.
       error.value = '';
       try {
-        const res = await axios.post('http://localhost:3000/todos', {
+        const res = await axios.post('todos', {
           subject: todo.subject,
           completed: todo.completed,
         });
@@ -147,13 +147,13 @@ export default {
     const deleteTodo = async (id) => {
       error.value = '';
       try {
-        await axios.delete('http://localhost:3000/todos/' + id);
+        await axios.delete('todos/' + id);
         // toast 호출
         triggerToast(id + '번째 TODO가 삭제되었습니다.', 'danger');
 
         // TODO 재검색
         // 전체 갯수 % 삭제한 후 갯수 == 0 && 현재가 마지막 페이지, 페이지 = 페이지 - 1을 해준다.
-        const res = await axios.get('http://localhost:3000/todos/');
+        const res = await axios.get('todos/');
         if (res.data.length % pageLimit == 0 && currentPage.value === numberOfPages.value) {
           currentPage.value = currentPage.value - 1;
         }
